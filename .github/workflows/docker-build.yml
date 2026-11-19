@@ -6,8 +6,14 @@ on:
     branches:
       - main
 
+# Cancel superseded PR checks; keep every non-PR invocation independent.
+concurrency:
+  group: docker-build.yml-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   docker-build:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
